@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".MainActivity">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/shape_gradient"
+        android:orientation="vertical">
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginBottom="10dp"
+            app:cardCornerRadius="20dp"
+            app:cardElevation="20dp"
+            app:contentPadding="10dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <com.example.smartfarming.CircleProgress
+                    android:id="@+id/circle_progress_bar1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="10dp"
+                    android:padding="5dp"
+                    app:antiAlias="true"
+                    app:arcWidth="@dimen/small"
+                    app:bgArcColor="@color/colorAccent"
+                    app:bgArcWidth="@dimen/small"
+                    app:hint="降雨量"
+                    app:hintSize="15sp"
+                    app:maxValue="100"
+                    app:startAngle="135"
+                    app:sweepAngle="270"
+                    app:unitSize="15sp"
+                    app:value="30"
+                    app:valueColor="@color/colorPrimary"
+                    app:valueSize="30sp"
+                    ></com.example.smartfarming.CircleProgress>
+
+                <com.example.smartfarming.DialProgress
+                    android:id="@+id/dial_progress_bar"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginLeft="10dp"
+                    app:animTime="1000"
+                    app:arcWidth="@dimen/large"
+                    app:dialIntervalDegree="3"
+                    app:dialWidth="1dp"
+                    app:hint="液位"
+                    app:hintSize="15sp"
+                    app:maxValue="50"
+                    app:startAngle="135"
+                    app:sweepAngle="270"
+                    app:unit="m"
+                    app:unitSize="15sp"
+                    app:value="10"
+                    app:valueSize="15sp"
+
+                    >
+
+                </com.example.smartfarming.DialProgress>
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginBottom="10dp"
+            app:cardCornerRadius="20dp"
+            app:cardElevation="20dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                android:paddingLeft="5dp"
+                android:paddingRight="5dp">
+
+                <TextView
+
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="节点1"
+                    android:textSize="30dp"
+                    android:gravity="center"
+                    ></TextView>
+
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginBottom="10dp"
+            app:cardCornerRadius="20dp"
+            app:cardElevation="20dp"
+            app:contentPadding="10dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <com.example.smartfarming.EchartView
+                    android:id="@+id/lineChart"
+                    android:layout_width="400dp"
+                    android:layout_height="250dp"
+                    android:layout_gravity="center" />
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginBottom="100dp"
+            app:cardCornerRadius="20dp"
+            app:contentPadding="5dp"
+            app:contentPaddingBottom="5dp">
+
+            <Button
+                android:id="@+id/btn_GetData"
+                android:layout_width="0dp"
+                android:layout_height="0dp" />
+
+            <Switch
+                android:id="@+id/sw_Ontime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="开始监测"
+                android:textSize="20dp" />
+        </androidx.cardview.widget.CardView>
+    </LinearLayout>
+</ScrollView>
