@@ -17,4 +17,10 @@
 * CardView：自定义卡片式View
 ---
 （3）登陆界面
-![image](https://github.com/17302550114/SmartFarming/blob/master/images/%E4%B8%BB%E7%95%8C%E9%9D%A2.png)
+* ![](https://github.com/17302550114/SmartFarming/blob/master/%E7%99%BB%E5%BD%95%E7%95%8C%E9%9D%A2.png)
+* 主要功能：登陆、验证、记住账号和密码
+* 实现方式：SharedPreferences
+---
+（4）主界面
+* ![]()
+* 主要功能：降雨量显示、液位未向安徽
