@@ -22,5 +22,6 @@
 * 实现方式：SharedPreferences
 ---
 （4）主界面
-* ![]()
-* 主要功能：降雨量显示、液位未向安徽
+* ![](https://github.com/17302550114/SmartFarming/blob/master/%E4%B8%BB%E7%95%8C%E9%9D%A2.png)
+* 主要功能：降雨量显示、液位显示、图表显示浊度变化
+* 实现方式：自定义View显示、Echarts图表实时显示浊度变化
