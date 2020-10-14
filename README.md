@@ -17,4 +17,4 @@
 * CardView：自定义卡片式View
 ---
 （3）登陆界面
-
+![image](https://github.com/17302550114/SmartFarming/blob/master/images/%E4%B8%BB%E7%95%8C%E9%9D%A2.png)
