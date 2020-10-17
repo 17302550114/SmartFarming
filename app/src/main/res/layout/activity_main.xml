@@ -28,7 +28,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-                <com.example.smartfarming.CircleProgress
+                <com.example.smartfarming.views.CircleProgress
                     android:id="@+id/circle_progress_bar1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -40,18 +40,18 @@
                     app:arcWidth="@dimen/small"
                     app:bgArcColor="@color/colorAccent"
                     app:bgArcWidth="@dimen/small"
-                    app:hint="降雨量"
+                    app:hint="步数"
                     app:hintSize="15sp"
-                    app:maxValue="100"
+                    app:maxValue="1000"
                     app:startAngle="135"
                     app:sweepAngle="270"
+                    app:unit="步"
                     app:unitSize="15sp"
-                    app:value="30"
+                    app:value="5"
                     app:valueColor="@color/colorPrimary"
-                    app:valueSize="30sp"
-                    ></com.example.smartfarming.CircleProgress>
+                    app:valueSize="25sp"></com.example.smartfarming.views.CircleProgress>
 
-                <com.example.smartfarming.DialProgress
+                <com.example.smartfarming.views.DialProgress
                     android:id="@+id/dial_progress_bar"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -61,19 +61,16 @@
                     app:arcWidth="@dimen/large"
                     app:dialIntervalDegree="3"
                     app:dialWidth="1dp"
-                    app:hint="液位"
+                    app:hint="距离"
                     app:hintSize="15sp"
                     app:maxValue="50"
                     app:startAngle="135"
                     app:sweepAngle="270"
                     app:unit="m"
                     app:unitSize="15sp"
-                    app:value="10"
-                    app:valueSize="15sp"
-
-                    >
-
-                </com.example.smartfarming.DialProgress>
+                    app:value="5"
+                    app:valueSize="15sp">
+                </com.example.smartfarming.views.DialProgress>
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
@@ -88,20 +85,27 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:paddingLeft="5dp"
                 android:paddingRight="5dp">
 
                 <TextView
-
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:text="节点1"
-                    android:textSize="30dp"
-                    android:gravity="center"
-                    ></TextView>
+                    android:layout_gravity="center"
+                    android:gravity="center_vertical"
+                    android:text="温度(℃)"
+                    android:textSize="25dp" />
 
+                <EditText
+                    android:id="@+id/et_Temperture"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="bottom"
+                    android:hint="28"
+                    android:paddingLeft="20dp"
+                    android:textSize="20dp" />
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
@@ -113,7 +117,7 @@
             android:layout_marginBottom="10dp"
             app:cardCornerRadius="20dp"
             app:cardElevation="20dp"
-            app:contentPadding="10dp">
+            app:contentPadding="5dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -121,8 +125,8 @@
 
                 <com.example.smartfarming.EchartView
                     android:id="@+id/lineChart"
-                    android:layout_width="400dp"
-                    android:layout_height="250dp"
+                    android:layout_width="340dp"
+                    android:layout_height="300dp"
                     android:layout_gravity="center" />
             </LinearLayout>
         </androidx.cardview.widget.CardView>

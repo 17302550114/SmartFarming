@@ -1,4 +1,4 @@
-package com.example.smartfarming;
+package com.example.smartfarming.views;
 
 import android.animation.ValueAnimator;
 import android.content.Context;
@@ -16,6 +16,8 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
 
+import com.example.smartfarming.BuildConfig;
+import com.example.smartfarming.R;
 import com.example.smartfarming.utils.*;
 
 /**

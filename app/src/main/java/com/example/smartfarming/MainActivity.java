@@ -1,9 +1,9 @@
 package com.example.smartfarming;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.loader.content.Loader;
 
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.view.View;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -12,26 +12,49 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Switch;
 
+import com.example.smartfarming.utils.EchartOptionUtil;
+import com.example.smartfarming.views.CircleProgress;
+import com.example.smartfarming.views.DialProgress;
 import com.google.gson.Gson;
 
 import java.io.IOException;
+import java.nio.channels.FileLock;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.FormatFlagsConversionMismatchException;
 import java.util.List;
-
-import javax.crypto.AEADBadTagException;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
-import okhttp3.Response;
+
+import static java.lang.Character.getType;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final String DEVICEID = "598768194";
     private static final String APIKEY = "ccOaQkJydurl7Frt0=jjvCbtrpM=";
-    private static final String Turbidity01 = "tur01";//数据流名称
-    private static final String Water_Height = "water_height";//数据流名称
 
+    private static final String DEVICEID_xintiao = "638280004";
+    private static final String DATE_xintiao = "638280004";
+
+    private static final String DEVICEID_jiasd = "638278449";
+    private static final String DATE_jiasudu = "638280004";
+
+    private static final String DEVICEID_tem = "598768194";
+    private static final String DATE_tem = "638280004";
+
+    private static final String DEVICEID = "598768194";
+
+    private static final String Turbidity01 = "tur01";//数据流名称
+    private static final String Water_Height = "water_height";//数据流名称\
+
+    private static final String Temperature = "temperature";
+    private static final String Acceler = "jiasudu";
+    private static final String Ecg = "xintiao";
+    private CircleProgress circleProgress;
+    private DialProgress dialProgress;
+    private EditText mEditTemperture;
+
+    private static int step = 0;
 
     private float result = 0;
 
@@ -52,6 +75,7 @@ public class MainActivity extends AppCompatActivity {
     //传感器值
     public ArrayList<String> mTimeBuffer = new ArrayList<>();
     public ArrayList<String> mTur01ValueBuffer = new ArrayList<>();
+
 
     public ArrayList<String> mWaterHeightValueBuffer = new ArrayList<>();
 
@@ -109,19 +133,20 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    /**
-     * 封装获取数据函数
-     * 1.发送请求
-     * 2.解析响应
-     * 3.数据存储
-     * 4.绘制表格
-     *
-     */
-//
-//    public void GetData()
-//    {
-//        parseJSONWithGSON(Get(DEVICEID,Turbidity01,APIKEY));
-//    }
+    public void Get_step(String deviceID, String dataStreamId, String apiKey) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    OkHttpClient client = new OkHttpClient();
+                    String response_acceler = client.newCall(new Request.Builder().url("http://api.heclouds.com/devices/" + DEVICEID_jiasd + "/datapoints?datastream_id=" + Acceler).header("api-key", apiKey).build()).execute().body().string();
+                    parseJSONWithGSON_acceler(response_acceler);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
 
     /**
      * 使用okHttp从oneNet平台获取响应
@@ -135,26 +160,80 @@ public class MainActivity extends AppCompatActivity {
             public void run() {
                 try {
                     OkHttpClient client = new OkHttpClient();
-                    Request request_tur = new Request.Builder().url("http://api.heclouds.com/devices/" + deviceID + "/datapoints?datastream_id=" + Turbidity01).header("api-key", apiKey).build();
-                    Request request_wh = new Request.Builder().url("http://api.heclouds.com/devices/" + deviceID + "/datapoints?datastream_id=" + Water_Height).header("api-key", apiKey).build();
-                    Response response_tur = client.newCall(request_tur).execute();
-                    Response response_wh = client.newCall(request_wh).execute();
-
-                    String responseDataTur = response_tur.body().string();
-                    String responseDataWh = response_wh.body().string();
-
-                    System.out.println(responseDataTur);
-                    parseJSONWithGSON(responseDataTur);
-                    parseJSONWithGSON_wh(responseDataWh);
-//                    float result = 0;
-//                    result += Float.parseFloat(mEditTur01.getText().toString()) * Float.parseFloat(mEditWaterHeight_01.getText().toString());
-//                    mNode01Loss.setText(String.valueOf(result));
+                    String response_tem = client.newCall(new Request.Builder().url("http://api.heclouds.com/devices/" + DEVICEID_tem + "/datapoints?datastream_id=" + Temperature).header("api-key", apiKey).build()).execute().body().string();
+                    String response_acceler = client.newCall(new Request.Builder().url("http://api.heclouds.com/devices/" + DEVICEID_jiasd + "/datapoints?datastream_id=" + Acceler).header("api-key", apiKey).build()).execute().body().string();
+                    String response_ecg = client.newCall(new Request.Builder().url("http://api.heclouds.com/devices/" + DEVICEID_xintiao + "/datapoints?datastream_id=" + Ecg).header("api-key", apiKey).build()).execute().body().string();//
+                    parseJSONWithGSON_tem(response_tem);
+//                    parseJSONWithGSON_acceler(response_acceler);
+                    parseJSONWithGSON_ecg(response_ecg);
 
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
         }).start();
+    }
+
+    int j = 200;
+    Object[] x = new Object[j];
+    Object[] y = new Object[j];
+
+    private void parseJSONWithGSON_ecg(String responseData) {
+
+        JsonRootBean app = new Gson().fromJson(responseData, JsonRootBean.class);
+        List<Datastreams> streams = app.getData().getDatastreams();
+        List<Datapoints> points = streams.get(0).getDatapoints();
+        int count = app.getData().getCount();//获取数据的数量
+        String mTur01Time = points.get(0).getAt().substring(11, 19);
+        String mTur01Value = points.get(0).getValue();
+
+        mTimeBuffer.add(0, mTur01Time);
+        mTur01ValueBuffer.add(0, mTur01Value);
+        System.out.println("-----------");
+        System.out.println(mTur01ValueBuffer.size());
+//        System.out.println(mTur01Value);
+        for (int i = 0; i < j; i++) {
+            x[i] = i;
+        }
+        if (mTur01ValueBuffer.size() > j) {
+            for (int i = 0; i < j; i++) {
+//                if (mTur01ValueBuffer.get(i).contains("-")) {
+//                    y[j - i - 1] = -30;
+//                }
+                y[j - i - 1] = -1*((Float.parseFloat(mTur01ValueBuffer.get(i))) / 10000-10);
+                System.out.println(y[j - i - 1]);
+            }
+        }
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                lineChart.refreshEchartsWithOption(EchartOptionUtil.getLineChartOptions(x, y));
+
+            }
+        });
+    }
+
+    private void parseJSONWithGSON_acceler(String responseData) {
+
+        JsonRootBean app = new Gson().fromJson(responseData, JsonRootBean.class);
+        List<Datastreams> streams = app.getData().getDatastreams();
+        List<Datapoints> points = streams.get(0).getDatapoints();
+        int count = app.getData().getCount();//获取数据的数量
+        for (int i = 0; i < points.size(); i++) {
+            String mTur01Value = points.get(i).getValue();
+            System.out.println(Float.parseFloat(mTur01Value));
+            if (Double.parseDouble(mTur01Value) > 120) {
+                step++;
+            }
+            System.out.println(step);
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    circleProgress.setValue(step);
+                    dialProgress.setValue((float) (step * 0.6123));
+                }
+            });
+        }
     }
 
     /**
@@ -167,6 +246,7 @@ public class MainActivity extends AppCompatActivity {
         JsonRootBean app = new Gson().fromJson(responseData, JsonRootBean.class);
         List<Datastreams> streams = app.getData().getDatastreams();
         List<Datapoints> points = streams.get(0).getDatapoints();
+        System.out.println("数据为：" + responseData);
         System.out.println("数据点大小为：" + points.size());
         int count = app.getData().getCount();//获取数据的数量
         for (int i = 0; i < points.size(); i++) {
@@ -177,8 +257,7 @@ public class MainActivity extends AppCompatActivity {
 
             mTimeBuffer.add(0, mTur01Time);
             mTur01ValueBuffer.add(0, mTur01Value);
-            System.out.println(mTimeBuffer.toString());
-            System.out.println(mTur01ValueBuffer.toString());
+
 
             Object[] x = new Object[7];
             Object[] y = new Object[7];
@@ -191,7 +270,7 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void run() {
 //                    mEditTur01.setText(mTur01Value);
-                    lineChart.refreshEchartsWithOption(EchartOptionUtil.getLineChartOptions(x, y));
+//                    lineChart.refreshEchartsWithOption(EchartOptionUtil.getLineChartOptions(x, y));
                 }
             });
         }
@@ -203,42 +282,25 @@ public class MainActivity extends AppCompatActivity {
      * @param responseData：网页响应
      * @return :返回解析结果——传感器值。。液位
      */
-    private void parseJSONWithGSON_wh(String responseData) {
+    private void parseJSONWithGSON_tem(String responseData) {
         JsonRootBean app = new Gson().fromJson(responseData, JsonRootBean.class);
         List<Datastreams> streams = app.getData().getDatastreams();
         List<Datapoints> points = streams.get(0).getDatapoints();
 //        System.out.println("数据点大小为：" + points.size());
         int count = app.getData().getCount();//获取数据的数量
         for (int i = 0; i < points.size(); i++) {
-            String mTur01Time = points.get(i).getAt().substring(11, 19);
             String mWhValue = points.get(i).getValue();
-//            System.out.println(mTur01Time);
-//            System.out.println(mTur01Value);
-//
-//            mTimeBuffer.add(0,mTur01Time);
-//            mTur01ValueBuffer.add(0,mTur01Value);
-//            System.out.println(mTimeBuffer.toString());
-//            System.out.println(mTur01ValueBuffer.toString());
-//
+            String mTemperature = mWhValue.substring(0, 2) + "." + mWhValue.substring(3, 4);
+            double mTemperater_f = 1.14 * (Float.parseFloat(mTemperature));
             Object[] x = new Object[7];
             Object[] y = new Object[7];
-
-            for (int j = 0; j < x.length; j++) {
-                x[x.length - 1 - j] = new String(mTimeBuffer.get(j));
-                y[x.length - 1 - j] = new String(mTur01ValueBuffer.get(j));
-            }
-//            DecimalFormat fnum = new DecimalFormat("##0.00");
-//            runOnUiThread(new Runnable() {
-//                @Override
-//                public void run() {
-//                    mEditWaterHeight_01.setText(mWhValue);
-//                    mCirclePro.setValue(Float.parseFloat(mWhValue));
-//                    result += 0.1 * (Float.parseFloat(mEditTur01.getText().toString()) * (Float.parseFloat(mEditWaterHeight_01.getText().toString()) / 1000));
-////                    String dd=fnum.format(result);
-//                    mNode01Loss.setText(String.valueOf(result));
-//                    lineChart.refreshEchartsWithOption(EchartOptionUtil.getLineChartOptions(x, y));
-//                }
-//            });
+            DecimalFormat fnum = new DecimalFormat("##0.00");
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    mEditTemperture.setText(("" + mTemperater_f).substring(0, 5));
+                }
+            });
         }
     }
     /**
@@ -261,13 +323,29 @@ public class MainActivity extends AppCompatActivity {
      * 开始自动获取数据
      */
     private void startAutoData() {
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while (true){
+                    Get_step(DEVICEID, Turbidity01, APIKEY);
+                    try {
+                        Thread.sleep(500);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                        break;
+                    }
+                }
+            }
+        }).start();
+
         mThreadAutoData = new Thread(new Runnable() {
             @Override
             public void run() {
                 while (!Thread.interrupted()) {
                     Get(DEVICEID, Turbidity01, APIKEY);
                     try {
-                        Thread.sleep(600);
+                        Thread.sleep(300);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                         break;
@@ -287,7 +365,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-
     //控件初始化
     private void initView() {
 //        mEditTur01 = findViewById(R.id.et_Tur01);
@@ -301,17 +378,13 @@ public class MainActivity extends AppCompatActivity {
         mSwitchOntime = findViewById(R.id.sw_Ontime);
 
         mCirclePro = findViewById(R.id.circle_progress_bar1);
-    }
 
-    public static float convertToFloat(String number, float defaultValue) {
-        if (TextUtils.isEmpty(number)) {
-            return defaultValue;
-        }
-        try {
-            return Float.parseFloat(number);
-        } catch (Exception e) {
-            return defaultValue;
-        }
+        circleProgress = findViewById(R.id.circle_progress_bar1);
+
+        dialProgress = findViewById(R.id.dial_progress_bar);
+
+        mEditTemperture = findViewById(R.id.et_Temperture);
 
     }
+
 }
