@@ -32,36 +32,22 @@ import static java.lang.Character.getType;
 public class MainActivity extends AppCompatActivity {
 
     private static final String APIKEY = "ccOaQkJydurl7Frt0=jjvCbtrpM=";
-
-    private static final String DEVICEID_xintiao = "638280004";
-    private static final String DATE_xintiao = "638280004";
-
-    private static final String DEVICEID_jiasd = "638278449";
-    private static final String DATE_jiasudu = "638280004";
-
-    private static final String DEVICEID_tem = "598768194";
-    private static final String DATE_tem = "638280004";
-
     private static final String DEVICEID = "598768194";
 
-    private static final String Turbidity01 = "tur01";//数据流名称
-    private static final String Water_Height = "water_height";//数据流名称\
+    private static final float PI = (float) 3.14;
 
-    private static final String Temperature = "temperature";
-    private static final String Acceler = "jiasudu";
-    private static final String Ecg = "xintiao";
+    private static final String TUR01 = "tur01";//数据流名称
+    private static final String WH = "water_height";//数据流名称\
+
     private CircleProgress circleProgress;
     private DialProgress dialProgress;
     private EditText mEditTemperture;
 
-    private static int step = 0;
-
-    private float result = 0;
-
     private EditText mEditTur01;
     private EditText mEditWaterHeight_01;
     private Button mBtnGetData;
-    private EditText mNode01Loss;
+    private float mLoss = 5 ;
+
     //图表控件
     private EchartView lineChart;
     //数据实时获取开关
@@ -75,7 +61,6 @@ public class MainActivity extends AppCompatActivity {
     //传感器值
     public ArrayList<String> mTimeBuffer = new ArrayList<>();
     public ArrayList<String> mTur01ValueBuffer = new ArrayList<>();
-
 
     public ArrayList<String> mWaterHeightValueBuffer = new ArrayList<>();
 
@@ -128,24 +113,9 @@ public class MainActivity extends AppCompatActivity {
         mBtnGetData.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Get(DEVICEID, Turbidity01, APIKEY);
+                Get(DEVICEID, TUR01, APIKEY);
             }
         });
-    }
-
-    public void Get_step(String deviceID, String dataStreamId, String apiKey) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    OkHttpClient client = new OkHttpClient();
-                    String response_acceler = client.newCall(new Request.Builder().url("http://api.heclouds.com/devices/" + DEVICEID_jiasd + "/datapoints?datastream_id=" + Acceler).header("api-key", apiKey).build()).execute().body().string();
-                    parseJSONWithGSON_acceler(response_acceler);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }).start();
     }
 
     /**
@@ -160,13 +130,11 @@ public class MainActivity extends AppCompatActivity {
             public void run() {
                 try {
                     OkHttpClient client = new OkHttpClient();
-                    String response_tem = client.newCall(new Request.Builder().url("http://api.heclouds.com/devices/" + DEVICEID_tem + "/datapoints?datastream_id=" + Temperature).header("api-key", apiKey).build()).execute().body().string();
-                    String response_acceler = client.newCall(new Request.Builder().url("http://api.heclouds.com/devices/" + DEVICEID_jiasd + "/datapoints?datastream_id=" + Acceler).header("api-key", apiKey).build()).execute().body().string();
-                    String response_ecg = client.newCall(new Request.Builder().url("http://api.heclouds.com/devices/" + DEVICEID_xintiao + "/datapoints?datastream_id=" + Ecg).header("api-key", apiKey).build()).execute().body().string();//
-                    parseJSONWithGSON_tem(response_tem);
-//                    parseJSONWithGSON_acceler(response_acceler);
-                    parseJSONWithGSON_ecg(response_ecg);
+                    String response_TUR01 = client.newCall(new Request.Builder().url("http://api.heclouds.com/devices/" + deviceID + "/datapoints?datastream_id=" + dataStreamId).header("api-key", apiKey).build()).execute().body().string();
+                    String response_LH = client.newCall(new Request.Builder().url("http://api.heclouds.com/devices/" + deviceID + "/datapoints?datastream_id=" + WH).header("api-key", apiKey).build()).execute().body().string();
 
+                    parseJSONWithGSON(response_TUR01);
+                    parseJSONWithGSON_LH(response_LH);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -174,66 +142,25 @@ public class MainActivity extends AppCompatActivity {
         }).start();
     }
 
-    int j = 200;
-    Object[] x = new Object[j];
-    Object[] y = new Object[j];
-
-    private void parseJSONWithGSON_ecg(String responseData) {
+    private void parseJSONWithGSON_LH(String responseData) {
 
         JsonRootBean app = new Gson().fromJson(responseData, JsonRootBean.class);
         List<Datastreams> streams = app.getData().getDatastreams();
         List<Datapoints> points = streams.get(0).getDatapoints();
         int count = app.getData().getCount();//获取数据的数量
-        String mTur01Time = points.get(0).getAt().substring(11, 19);
-        String mTur01Value = points.get(0).getValue();
+        String mTur01_LH = points.get(0).getValue();
 
-        mTimeBuffer.add(0, mTur01Time);
-        mTur01ValueBuffer.add(0, mTur01Value);
-        System.out.println("-----------");
-        System.out.println(mTur01ValueBuffer.size());
-//        System.out.println(mTur01Value);
-        for (int i = 0; i < j; i++) {
-            x[i] = i;
-        }
-        if (mTur01ValueBuffer.size() > j) {
-            for (int i = 0; i < j; i++) {
-//                if (mTur01ValueBuffer.get(i).contains("-")) {
-//                    y[j - i - 1] = -30;
-//                }
-                y[j - i - 1] = -1*((Float.parseFloat(mTur01ValueBuffer.get(i))) / 10000-10);
-                System.out.println(y[j - i - 1]);
-            }
-        }
+        mLoss += (float) (Float.parseFloat(mTur01_LH) * (0.1866*Float.parseFloat(mTur01ValueBuffer.get(0)))-0.683);
+
+        System.out.println(mTur01_LH);
+
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                lineChart.refreshEchartsWithOption(EchartOptionUtil.getLineChartOptions(x, y));
-
+                dialProgress.setValue(Float.parseFloat(mTur01_LH));
+                circleProgress.setValue(mLoss);
             }
         });
-    }
-
-    private void parseJSONWithGSON_acceler(String responseData) {
-
-        JsonRootBean app = new Gson().fromJson(responseData, JsonRootBean.class);
-        List<Datastreams> streams = app.getData().getDatastreams();
-        List<Datapoints> points = streams.get(0).getDatapoints();
-        int count = app.getData().getCount();//获取数据的数量
-        for (int i = 0; i < points.size(); i++) {
-            String mTur01Value = points.get(i).getValue();
-            System.out.println(Float.parseFloat(mTur01Value));
-            if (Double.parseDouble(mTur01Value) > 120) {
-                step++;
-            }
-            System.out.println(step);
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    circleProgress.setValue(step);
-                    dialProgress.setValue((float) (step * 0.6123));
-                }
-            });
-        }
     }
 
     /**
@@ -246,14 +173,14 @@ public class MainActivity extends AppCompatActivity {
         JsonRootBean app = new Gson().fromJson(responseData, JsonRootBean.class);
         List<Datastreams> streams = app.getData().getDatastreams();
         List<Datapoints> points = streams.get(0).getDatapoints();
-        System.out.println("数据为：" + responseData);
-        System.out.println("数据点大小为：" + points.size());
+//        System.out.println("数据为：" + responseData);
+//        System.out.println("数据点大小为：" + points.size());
         int count = app.getData().getCount();//获取数据的数量
         for (int i = 0; i < points.size(); i++) {
             String mTur01Time = points.get(i).getAt().substring(11, 19);
             String mTur01Value = points.get(i).getValue();
-            System.out.println(mTur01Time);
-            System.out.println(mTur01Value);
+//            System.out.println(mTur01Time);
+//            System.out.println(mTur01Value);
 
             mTimeBuffer.add(0, mTur01Time);
             mTur01ValueBuffer.add(0, mTur01Value);
@@ -270,39 +197,39 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void run() {
 //                    mEditTur01.setText(mTur01Value);
-//                    lineChart.refreshEchartsWithOption(EchartOptionUtil.getLineChartOptions(x, y));
+                    lineChart.refreshEchartsWithOption(EchartOptionUtil.getLineChartOptions(x, y));
                 }
             });
         }
     }
 
-    /**
-     * 解析网页响应，返回传感器数值 液位高度
-     *
-     * @param responseData：网页响应
-     * @return :返回解析结果——传感器值。。液位
-     */
-    private void parseJSONWithGSON_tem(String responseData) {
-        JsonRootBean app = new Gson().fromJson(responseData, JsonRootBean.class);
-        List<Datastreams> streams = app.getData().getDatastreams();
-        List<Datapoints> points = streams.get(0).getDatapoints();
-//        System.out.println("数据点大小为：" + points.size());
-        int count = app.getData().getCount();//获取数据的数量
-        for (int i = 0; i < points.size(); i++) {
-            String mWhValue = points.get(i).getValue();
-            String mTemperature = mWhValue.substring(0, 2) + "." + mWhValue.substring(3, 4);
-            double mTemperater_f = 1.14 * (Float.parseFloat(mTemperature));
-            Object[] x = new Object[7];
-            Object[] y = new Object[7];
-            DecimalFormat fnum = new DecimalFormat("##0.00");
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    mEditTemperture.setText(("" + mTemperater_f).substring(0, 5));
-                }
-            });
-        }
-    }
+//    /**
+//     * 解析网页响应，返回传感器数值 液位高度
+//     *
+//     * @param responseData：网页响应
+//     * @return :返回解析结果——传感器值。。液位
+//     */
+//    private void parseJSONWithGSON_tem(String responseData) {
+//        JsonRootBean app = new Gson().fromJson(responseData, JsonRootBean.class);
+//        List<Datastreams> streams = app.getData().getDatastreams();
+//        List<Datapoints> points = streams.get(0).getDatapoints();
+////        System.out.println("数据点大小为：" + points.size());
+//        int count = app.getData().getCount();//获取数据的数量
+//        for (int i = 0; i < points.size(); i++) {
+//            String mWhValue = points.get(i).getValue();
+//            String mTemperature = mWhValue.substring(0, 2) + "." + mWhValue.substring(3, 4);
+//            double mTemperater_f = 1.14 * (Float.parseFloat(mTemperature));
+//            Object[] x = new Object[7];
+//            Object[] y = new Object[7];
+//            DecimalFormat fnum = new DecimalFormat("##0.00");
+//            runOnUiThread(new Runnable() {
+//                @Override
+//                public void run() {
+//                    mEditTemperture.setText(("" + mTemperater_f).substring(0, 5));
+//                }
+//            });
+//        }
+//    }
     /**
      * 绘制图表
      * @param arrayListX: 坐标横轴：时间
@@ -323,29 +250,13 @@ public class MainActivity extends AppCompatActivity {
      * 开始自动获取数据
      */
     private void startAutoData() {
-
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                while (true){
-                    Get_step(DEVICEID, Turbidity01, APIKEY);
-                    try {
-                        Thread.sleep(500);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                        break;
-                    }
-                }
-            }
-        }).start();
-
         mThreadAutoData = new Thread(new Runnable() {
             @Override
             public void run() {
                 while (!Thread.interrupted()) {
-                    Get(DEVICEID, Turbidity01, APIKEY);
+                    Get(DEVICEID, TUR01, APIKEY);
                     try {
-                        Thread.sleep(300);
+                        Thread.sleep(1000);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                         break;
@@ -371,7 +282,6 @@ public class MainActivity extends AppCompatActivity {
 //        mEditWaterHeight_01 = findViewById(R.id.et_WaterHeight01);
         mBtnGetData = findViewById(R.id.btn_GetData);
 //        mNode01Loss = findViewById(R.id.et_node01Loss);
-
 //        图表初始化
         lineChart = findViewById(R.id.lineChart);
         //初始化实时数据开关
@@ -382,8 +292,6 @@ public class MainActivity extends AppCompatActivity {
         circleProgress = findViewById(R.id.circle_progress_bar1);
 
         dialProgress = findViewById(R.id.dial_progress_bar);
-
-        mEditTemperture = findViewById(R.id.et_Temperture);
 
     }
 

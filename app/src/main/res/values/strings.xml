@@ -1,3 +1,7 @@
 <resources>
-    <string name="app_name">运动监测</string>
+    <string name="app_name">智能农业</string>
+    <string name="liquid_height">液位高度</string>
+    <string name="step">流失量</string>
+    <string name="Node01">节点1</string>
+
 </resources>
