@@ -26,7 +26,7 @@ public class EchartOptionUtil {
         GsonOption option = new GsonOption();
 
 
-        option.title("心电监测");
+        option.title("浊度监测");
         option.tooltip().trigger(Trigger.axis);
         ValueAxis valueAxis = new ValueAxis();
         valueAxis.min(0);
