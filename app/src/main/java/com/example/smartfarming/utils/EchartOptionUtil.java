@@ -29,8 +29,8 @@ public class EchartOptionUtil {
         option.title("心电监测");
         option.tooltip().trigger(Trigger.axis);
         ValueAxis valueAxis = new ValueAxis();
-        valueAxis.min(-5);
-        valueAxis.max(20);
+        valueAxis.min(0);
+        valueAxis.max(6);
 
         CategoryAxis categorxAxis = new CategoryAxis();
         categorxAxis.axisLine().onZero(false);

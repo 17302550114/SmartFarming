@@ -40,12 +40,12 @@
                     app:arcWidth="@dimen/small"
                     app:bgArcColor="@color/colorAccent"
                     app:bgArcWidth="@dimen/small"
-                    app:hint="步数"
+                    app:hint="流失量"
                     app:hintSize="15sp"
                     app:maxValue="1000"
                     app:startAngle="135"
                     app:sweepAngle="270"
-                    app:unit="步"
+                    app:unit="g"
                     app:unitSize="15sp"
                     app:value="5"
                     app:valueColor="@color/colorPrimary"
@@ -61,16 +61,15 @@
                     app:arcWidth="@dimen/large"
                     app:dialIntervalDegree="3"
                     app:dialWidth="1dp"
-                    app:hint="距离"
+                    app:hint="液位"
                     app:hintSize="15sp"
-                    app:maxValue="50"
+                    app:maxValue="200"
                     app:startAngle="135"
                     app:sweepAngle="270"
-                    app:unit="m"
+                    app:unit="cm"
                     app:unitSize="15sp"
                     app:value="5"
-                    app:valueSize="15sp">
-                </com.example.smartfarming.views.DialProgress>
+                    app:valueSize="15sp"></com.example.smartfarming.views.DialProgress>
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
@@ -86,26 +85,26 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:gravity="center"
                 android:orientation="horizontal"
                 android:paddingLeft="5dp"
                 android:paddingRight="5dp">
 
                 <TextView
                     android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_gravity="center"
-                    android:gravity="center_vertical"
-                    android:text="温度(℃)"
-                    android:textSize="25dp" />
-
-                <EditText
-                    android:id="@+id/et_Temperture"
-                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:gravity="bottom"
-                    android:hint="28"
-                    android:paddingLeft="20dp"
-                    android:textSize="20dp" />
+                    android:gravity="center_vertical"
+                    android:text="@string/Node01"
+                    android:textSize="30dp" />
+
+                <!--                <EditText-->
+                <!--                    android:id="@+id/et_Temperture"-->
+                <!--                    android:layout_width="match_parent"-->
+                <!--                    android:layout_height="wrap_content"-->
+                <!--                    android:gravity="bottom"-->
+                <!--                    android:hint="28"-->
+                <!--                    android:paddingLeft="20dp"-->
+                <!--                    android:textSize="20dp" />-->
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
@@ -123,7 +122,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-                <com.example.smartfarming.EchartView
+                <com.example.smartfarming.utils.EchartView
                     android:id="@+id/lineChart"
                     android:layout_width="340dp"
                     android:layout_height="300dp"
@@ -136,16 +135,14 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
-            android:layout_marginBottom="100dp"
+            android:layout_marginBottom="10dp"
             app:cardCornerRadius="20dp"
             app:contentPadding="5dp"
             app:contentPaddingBottom="5dp">
-
             <Button
                 android:id="@+id/btn_GetData"
                 android:layout_width="0dp"
-                android:layout_height="0dp" />
-
+                android:layout_height="0dp"/>
             <Switch
                 android:id="@+id/sw_Ontime"
                 android:layout_width="wrap_content"
@@ -153,6 +150,13 @@
                 android:layout_gravity="center"
                 android:text="开始监测"
                 android:textSize="20dp" />
+            <Button
+                android:id="@+id/btnGenInfo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right"
+                android:text="统计信息"
+                />
         </androidx.cardview.widget.CardView>
     </LinearLayout>
 </ScrollView>

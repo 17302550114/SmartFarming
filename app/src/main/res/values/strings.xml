@@ -1,3 +1,4 @@
 <resources>
-    <string name="app_name">运动监测</string>
+    <string name="app_name">智慧农业</string>
+    <string name="Node01">节点1</string>
 </resources>

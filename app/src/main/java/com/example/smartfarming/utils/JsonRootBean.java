@@ -1,4 +1,6 @@
-package com.example.smartfarming;
+package com.example.smartfarming.utils;
+
+import com.example.smartfarming.Data;
 
 public class JsonRootBean {
     private int errno;
