@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">智慧农业</string>
     <string name="Node01">节点1</string>
+    <string name="display_value">实时显示</string>
 </resources>
