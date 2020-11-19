@@ -41,5 +41,6 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.8.1'
     implementation 'net.sourceforge.jexcelapi:jxl:2.6.12'
 
+    implementation project(':onenet-sdk')
 
 }

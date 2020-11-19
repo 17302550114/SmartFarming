@@ -89,22 +89,16 @@
                 android:orientation="horizontal"
                 android:paddingLeft="5dp"
                 android:paddingRight="5dp">
-
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
                     android:text="@string/Node01"
                     android:textSize="30dp" />
-
-                <!--                <EditText-->
-                <!--                    android:id="@+id/et_Temperture"-->
-                <!--                    android:layout_width="match_parent"-->
-                <!--                    android:layout_height="wrap_content"-->
-                <!--                    android:gravity="bottom"-->
-                <!--                    android:hint="28"-->
-                <!--                    android:paddingLeft="20dp"-->
-                <!--                    android:textSize="20dp" />-->
+               <androidx.appcompat.widget.AppCompatToggleButton
+                   android:id="@+id/monitor_btn"
+                   android:layout_width="40dp"
+                   android:layout_height="40dp"
+                   android:background="@drawable/monitor_close"/>
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 

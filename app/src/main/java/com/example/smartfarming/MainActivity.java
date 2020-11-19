@@ -1,7 +1,9 @@
     package com.example.smartfarming;
 
+    import androidx.annotation.RequiresApi;
     import androidx.appcompat.app.AppCompatActivity;
 
+    import android.os.Build;
     import android.os.Bundle;
     import android.view.View;
     import android.webkit.WebView;
@@ -10,9 +12,14 @@
     import android.widget.CompoundButton;
     import android.widget.EditText;
     import android.widget.Switch;
+    import android.widget.Toast;
+    import android.widget.ToggleButton;
 
+    import com.chinamobile.iot.onenet.OneNetApi;
+    import com.chinamobile.iot.onenet.OneNetApiCallback;
     import com.example.smartfarming.data.NodeData;
     import com.example.smartfarming.data.Order;
+    import com.example.smartfarming.model.DeviceItem;
     import com.example.smartfarming.utils.Constant;
     import com.example.smartfarming.utils.EchartOptionUtil;
     import com.example.smartfarming.utils.EchartView;
@@ -21,6 +28,8 @@
     import com.example.smartfarming.views.CircleProgress;
     import com.example.smartfarming.views.DialProgress;
     import com.google.gson.Gson;
+    import com.google.gson.JsonObject;
+    import com.google.gson.JsonParser;
 
     import java.io.IOException;
     import java.util.ArrayList;
@@ -40,12 +49,17 @@
         private static final float PI = (float) 3.14;
         private DialProgress dialProgress;
 
+        private DeviceItem mDeviceItem;
+
+
         //基础控件
         private EditText mEditTur01;
         private EditText mEditWaterHeight_01;
         private Button mBtnGetData;
         private float mLoss = 5;
         private Button mBtnGenInfo;//生成信息报表
+        private ToggleButton mBtnMonitor;
+
         //图表控件
         private EchartView lineChart;
         //数据实时获取开关
@@ -61,6 +75,9 @@
         public ArrayList<String> mTur01ValueBuffer = new ArrayList<>();
         List<Order> list;
         List<NodeData> list_NodeData;
+
+        public MainActivity() {
+        }
         //数据类
 
         @Override
@@ -83,6 +100,36 @@
                 mTur01ValueBuffer.add("0");
                 mTimeBuffer.add("0");
             }
+
+            mBtnMonitor.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    if (isChecked){
+                        mBtnMonitor.setBackgroundDrawable(mBtnMonitor.getResources().getDrawable(R.drawable.monitor_open));
+//                        OneNetApi.sendCmdToDevice(DEVICEID, "1", new OneNetApiCallback() {
+//                            @Override
+//                            public void onSuccess(String response) {
+////                                JsonObject resp = new JsonParser().parse(response).getAsJsonObject();
+////                                int errno = resp.get("errno").getAsInt();
+////                                if(0==errno){
+////                                    Toast.makeText(getApplicationContext(), "send_cmd_succ", Toast.LENGTH_SHORT).show();
+////                                }else{
+////                                    String error = resp.get("error").getAsString();
+////                                    Toast.makeText(getApplicationContext(), "send_cmd_error", Toast.LENGTH_SHORT).show();
+////                                }
+//                            }
+//                            @Override
+//                            public void onFailed(Exception e) {
+//
+//                            }
+//                        });
+                        Toast.makeText(MainActivity.this, "open", Toast.LENGTH_SHORT).show();
+                    }else{
+                        mBtnMonitor.setBackgroundDrawable(mBtnMonitor.getResources().getDrawable(R.drawable.monitor_close));
+                        Toast.makeText(MainActivity.this, "close", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
 
             mBtnGenInfo.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -272,7 +319,8 @@
             mSwitchOntime = findViewById(R.id.sw_Ontime);
             mCirclePro = findViewById(R.id.circle_progress_bar1);
             dialProgress = findViewById(R.id.dial_progress_bar);
-
+            mBtnMonitor = (ToggleButton)findViewById(R.id.monitor_btn);
+            mBtnMonitor.setBackgroundDrawable(mBtnMonitor.getResources().getDrawable(R.drawable.monitor_close));
             mBtnGenInfo = (Button) findViewById(R.id.btnGenInfo);
         }
     }
